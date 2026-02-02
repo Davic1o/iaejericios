@@ -2,41 +2,35 @@
 
 ## Planteamiento
 
-Desarrolla un programa en C que lea las dimensiones (filas N y columnas M) de una matriz de enteros, seguido de sus N*M elementos. El programa debe calcular y mostrar la suma de todos los elementos de la matriz.
+Escribe un programa en C que lea una secuencia de números enteros y determine cuál es el valor máximo presente en ella. El programa debe manejar un número predefinido de elementos para el arreglo unidimensional (vector).
 
 ## Criterios de Aceptación
 
-El programa debe compilar correctamente.
-El resultado debe ser la suma exacta de todos los elementos de la matriz.
+El programa debe encontrar correctamente el valor máximo en cualquier secuencia de enteros.
+Debe manejar arreglos de al menos 1 elemento.
 
 ## Entradas
 
-Dos enteros, N y M, que representan las filas y columnas de la matriz.
-N*M enteros para los elementos de la matriz, leídos fila por fila.
+Una línea conteniendo el tamaño N del arreglo.
+N números enteros separados por espacios en una segunda línea.
 
 ## Salidas
 
-Un único entero que representa la suma total de todos los elementos de la matriz.
+Un único número entero, que es el valor máximo encontrado en el arreglo.
 
 ## Casos de Prueba
 
 ```text
-2 2
-1 2
-3 4
--> 10
-3 1
 5
-10
-15
--> 30
-1 3
-10 20 30
--> 60
-2 3
--1 2 3
-4 5 -6
--> 7
+10 2 8 15 3 -> 15
+4
+-5 -1 -10 -2 -> -1
+6
+-10 0 5 1 20 -3 -> 20
+1
+42 -> 42
+3
+7 7 7 -> 7
 ```
 
 ## Código de Solución
@@ -45,68 +39,32 @@ Un único entero que representa la suma total de todos los elementos de la matri
 
 ```c
 #include <stdio.h>
-#include <stdlib.h>
+#include <limits.h> // Para INT_MIN
 
 int main() {
-    int N, M;
-
-    // Leer las dimensiones de la matriz
-    if (scanf("%d %d", &N, &M) != 2) {
-        fprintf(stderr, "Error: No se pudieron leer las dimensiones N y M.\n");
+    int n;
+    // Leer el tamaño del arreglo
+    if (scanf("%d", &n) != 1 || n <= 0) {
+        // Manejo de error básico o suposición de entrada válida
         return 1; 
     }
 
-    // Validar dimensiones (evitar tamaños excesivamente grandes o inválidos)
-    if (N <= 0 || M <= 0 || N > 1000 || M > 1000) { 
-        fprintf(stderr, "Error: Dimensiones de matriz inválidas (N, M deben ser > 0 y <= 1000).\n");
-        return 1;
-    }
+    int arr[n]; // Arreglo de longitud variable (C99 VLA)
+    int max_val = INT_MIN; // Inicializar con el valor entero más pequeño posible
 
-    // Asignación dinámica de memoria para la matriz
-    int **matriz;
-    matriz = (int **) malloc(N * sizeof(int *));
-    if (matriz == NULL) {
-        fprintf(stderr, "Error: No se pudo asignar memoria para las filas de la matriz.\n");
-        return 1;
-    }
-
-    for (int i = 0; i < N; i++) {
-        matriz[i] = (int *) malloc(M * sizeof(int));
-        if (matriz[i] == NULL) {
-            fprintf(stderr, "Error: No se pudo asignar memoria para la columna %d de la matriz.\n", i);
-            // Liberar memoria ya asignada antes de salir
-            for (int k = 0; k < i; k++) {
-                free(matriz[k]);
-            }
-            free(matriz);
+    // Leer los elementos del arreglo y encontrar el máximo
+    for (int i = 0; i < n; i++) {
+        if (scanf("%d", &arr[i]) != 1) {
+            // Error al leer un elemento
             return 1;
         }
-    }
-
-    long long suma = 0; // Usar long long para evitar desbordamiento en la suma
-
-    // Leer los elementos de la matriz y calcular la suma
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
-            if (scanf("%d", &matriz[i][j]) != 1) {
-                fprintf(stderr, "Error: No se pudo leer el elemento en la posición (%d, %d).\n", i, j);
-                // Liberar memoria antes de salir
-                for (int k = 0; k < N; k++) free(matriz[k]);
-                free(matriz);
-                return 1;
-            }
-            suma += matriz[i][j];
+        if (arr[i] > max_val) {
+            max_val = arr[i];
         }
     }
 
-    // Imprimir la suma total
-    printf("%lld\n", suma);
-
-    // Liberar la memoria asignada
-    for (int i = 0; i < N; i++) {
-        free(matriz[i]);
-    }
-    free(matriz);
+    // Imprimir el valor máximo encontrado
+    printf("%d\n", max_val);
 
     return 0;
 }
